@@ -66,7 +66,6 @@ function initSection2() {
                     });
 
                     showShc(shc);
-                    showAnalysis();
                     showPayload(parser);
                     showSection("section-3")();
 
@@ -97,26 +96,6 @@ function showShc(shc: SmartHealthCard) {
     const section3 = document.getElementById("section-3");
     section3.appendChild(element);
 };
-
-function showAnalysis() {
-    const element = document.createElement('div');
-    const template =
-        '<h2>Analyse des données</h2>' +
-        '<p>Il est actuellement impossible de valider la provenance ' +
-        'et l\'intégrité du code QR car la clé publique n\'est pas disponible</p>' +
-        '<p>Le résultat synthèse ci-haut n\'est que notre compréhension du contenu' +
-        'du code QR. Il devrait être utilisé seulement comme démonstration de la' +
-        'technologie, et non pas comme une façon définitive de déterminer si une' +
-        'personne est immunisé ou non.</p>' +
-        '<h2>Transfert des données</h2>' +
-        '<p>Les données sont analysés dans la navigateur seulement. En aucun cas ' +
-        'ce site transfert sur un serveur distant ou collecte les données analysés' +
-        'dans une base de données</p>';
-    element.innerHTML = template;
-
-    const section3 = document.getElementById("section-3");
-    section3.appendChild(element);
-}
 
 function showPayload(shcParser: SmartHealthCardQRParser) {
     const element = document.createElement('div');
