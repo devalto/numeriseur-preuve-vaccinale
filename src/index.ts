@@ -21,11 +21,7 @@ function showSection(showSection: string) {
     return function() {
         sections.forEach((sectionName) => {
             const section = document.getElementById(sectionName);
-            if (sectionName == showSection) {
-                section.classList.remove("hidden-section")
-            } else {
-                section.classList.add("hidden-section")
-            }
+            section.hidden = sectionName != showSection;
         });
     }
 }
@@ -44,7 +40,7 @@ function initSection2() {
     });
 
     function tick() {
-        loadingMessage.innerText = "⌛ Loading video..."
+        loadingMessage.innerText = "⌛ chargement de la video..."
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
             loadingMessage.hidden = true;
             canvasElement.hidden = false;
@@ -68,9 +64,7 @@ function initSection2() {
                     showShc(shc);
                     showPayload(parser);
                     showSection("section-3")();
-
                 } catch (e: any) {
-
                 }
             }
         }

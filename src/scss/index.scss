@@ -1,12 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
 
-.hidden-section {
-  display: none;
-}
-
 .json {
   border: 1px solid #aaa;
 }
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
 
 #disclaimer {
   margin-top: 10px;
