@@ -2,6 +2,7 @@ import {CovidImmunizationStatus, CovidVaccineProof, SmartHealthCard, SmartHealth
 import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
+import './analytics.js'
 
 function main() {
     const showScan = document.getElementById("show-scan");
