@@ -63,7 +63,7 @@ function initSection2() {
                     });
 
                     showShc(shc);
-                    showPayload(parser);
+                    //showPayload(parser);
                     showSection("section-3")();
                 } catch (e: any) {
                 }
@@ -77,19 +77,32 @@ function showShc(shc: SmartHealthCard) {
     const element = document.createElement('div');
     const info = new CovidVaccineProof(shc.verifiableCredential.subject.bundle);
     const dateFormatter = Intl.DateTimeFormat("fr");
+    const templateImmuneStatus = (info.immunizationStatus() == CovidImmunizationStatus.Complete || info.immunizationStatus() == CovidImmunizationStatus.Partial)?'<div class="alert alert-success" role="alert">{{immunizationStatus}}</div>':'<div class="alert alert-danger" role="alert">{{immunizationStatus}}</div>';
+    
     const view = {
-        immunizationStatus: info.immunizationStatus() != CovidImmunizationStatus.Complete ? (info.immunizationStatus() == CovidImmunizationStatus.Partial ? "✅ Immunisation partielle": "❌ Non immunisé") : "✅ Immunisation complète",
+        immunizationStatus: info.immunizationStatus() != CovidImmunizationStatus.Complete ? (info.immunizationStatus() == CovidImmunizationStatus.Partial ? '✅ Première dose administrée': '❌ Non vacciné') : '✅ Seconde dose administrée',
         fullName: info.patientName(),
         firstDose: info.hasFirstDose() ? "✅ Première dose administrée le " + dateFormatter.format(info.firstDose.occurrenceDateTime) : "❌ Première dose non administrée",
         secondDose: info.hasSecondDose() ? "✅ Seconde dose administrée le " + dateFormatter.format(info.secondDose.occurrenceDateTime) : "❌ Seconde dose non administrée"
     };
 
-    var template = "<h1>{{immunizationStatus}}</h1><ul><li>Nom: {{fullName}}</li><li>{{firstDose}}</li><li>{{secondDose}}</li></ul>"
+    var template = 
+    '<div class="card fade-in-text">'+
+      '<div class="card-body">'+
+        '<h5 class="card-title">{{fullName}}</h5>'+
+        templateImmuneStatus+
+        '<p class="card-text">'+
+        '<div class="alert alert-primary" role="alert">{{firstDose}}</div>'+
+        '<div class="alert alert-primary" role="alert">{{secondDose}}</div>'+
+        '</p>'+
+      '</div>'+
+    '</div>'+
+    '<hr/>';
 
     element.innerHTML = Mustache.render(template, view);
 
     const section3 = document.getElementById("section-3");
-    section3.appendChild(element);
+    section3.innerHTML = element.innerHTML;
 };
 
 function showPayload(shcParser: SmartHealthCardQRParser) {
