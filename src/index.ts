@@ -3,23 +3,28 @@ import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
 import './analytics.js'
+import 'bootstrap'
 
 function main() {
-    const showScan = document.getElementById("show-scan");
+    const showScan = document.getElementById("show-camera");
 
-    showScan.addEventListener("click", initSection2);
-    showScan.addEventListener("click", showSection("section-2"));
+    showScan.addEventListener("click", initSectionCamera);
+    showScan.addEventListener("click", showSection("section-camera"));
 
-    document.getElementById("section-3").innerText = "";
+    const showFile = document.getElementById("show-file-upload");
+
+    showFile.addEventListener("click", initSectionFile);
+    showFile.addEventListener("click", showSection("section-file"));
 }
 
 function showSection(showSection: string) {
     const sections = [
-        "section-1",
-        "section-2",
-        "section-3",
+        "section-home",
+        "section-camera",
+        "section-file",
+        "section-final",
     ];
-    return function() {
+    return function () {
         sections.forEach((sectionName) => {
             const section = document.getElementById(sectionName);
             section.hidden = sectionName != showSection;
@@ -27,13 +32,54 @@ function showSection(showSection: string) {
     }
 }
 
-function initSection2() {
+function initSectionFile() {
+    const uploadedFile = <HTMLInputElement>document.getElementById("uploaded-file");
+    uploadedFile.addEventListener("change", (e) => {
+        if (uploadedFile.files.length <= 0) {
+            return;
+        }
+
+        const file = uploadedFile.files[0];
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        const c = <HTMLCanvasElement>document.getElementById("photo");
+
+        img.addEventListener("load", () => {
+            URL.revokeObjectURL(this.src);
+            c.height = img.height;
+            c.width = img.width;
+            c.hidden = false;
+
+            const ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0, c.width, c.height);
+
+            const imageData = ctx.getImageData(0, 0, img.width, img.height);
+            var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+            });
+            if (code) {
+                try {
+                    const parser = SmartHealthCardQRParser.fromQRCodeRawData(code.data);
+                    const shc = parser.parse();
+
+                    showFinalSection(shc, parser);
+                } catch (e: any) {
+                }
+            }
+
+        });
+
+        img.src = url;
+    });
+}
+
+function initSectionCamera() {
     const video = document.createElement("video");
     const canvasElement = <HTMLCanvasElement>document.getElementById("canvas");
     const canvas = canvasElement.getContext("2d");
     const loadingMessage = document.getElementById("loadingMessage");
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: 640 } }).then(function(stream) {
+    navigator.mediaDevices.getUserMedia({video: {facingMode: "environment", width: 640}}).then(function (stream) {
         video.srcObject = stream;
         video.setAttribute("playsinline", "true"); // required to tell iOS safari we don't want fullscreen
         video.play();
@@ -41,6 +87,7 @@ function initSection2() {
     });
 
     function tick() {
+        let continueRequest = true;
         loadingMessage.innerText = "⌛ chargement de la video..."
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
             loadingMessage.hidden = true;
@@ -58,22 +105,33 @@ function initSection2() {
                     const parser = SmartHealthCardQRParser.fromQRCodeRawData(code.data);
                     const shc = parser.parse();
 
-                    (<MediaStream>video.srcObject).getTracks().forEach(function(track: MediaStreamTrack) {
+                    (<MediaStream>video.srcObject).getTracks().forEach(function (track: MediaStreamTrack) {
                         track.stop();
                     });
 
-                    showShc(shc);
-                    //showPayload(parser);
-                    showSection("section-3")();
+                    showFinalSection(shc, parser);
+
+                    continueRequest = false;
                 } catch (e: any) {
                 }
             }
         }
-        requestAnimationFrame(tick);
+        if (continueRequest) {
+            requestAnimationFrame(tick);
+        }
     }
 }
 
+function showFinalSection(shc: SmartHealthCard, shcParser: SmartHealthCardQRParser) {
+    showShc(shc);
+    showPayload(shcParser);
+    showSection("section-final")();
+}
+
 function showShc(shc: SmartHealthCard) {
+    const section = document.getElementById("section-final");
+    section.innerText = "";
+
     const element = document.createElement('div');
     const info = new CovidVaccineProof(shc.verifiableCredential.subject.bundle);
     const dateFormatter = Intl.DateTimeFormat("fr");
@@ -86,7 +144,7 @@ function showShc(shc: SmartHealthCard) {
         secondDose: info.hasSecondDose() ? "✅ Seconde dose administrée le " + dateFormatter.format(info.secondDose.occurrenceDateTime) : "❌ Seconde dose non administrée"
     };
 
-    var template = 
+    var template =
     '<div class="card fade-in-text">'+
       '<div class="card-body">'+
         '<h5 class="card-title">{{fullName}}</h5>'+
@@ -101,8 +159,10 @@ function showShc(shc: SmartHealthCard) {
 
     element.innerHTML = Mustache.render(template, view);
 
-    const section3 = document.getElementById("section-3");
-    section3.innerHTML = element.innerHTML;
+    section.appendChild(element);
+
+    const showHome = document.getElementById("show-home");
+    showHome.addEventListener("click", showSection("section-home"));
 };
 
 function showPayload(shcParser: SmartHealthCardQRParser) {
@@ -122,8 +182,10 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
 
     element.innerHTML = Mustache.render(template, view);
 
-    const section3 = document.getElementById("section-3");
-    section3.appendChild(element);
+    const section = document.getElementById("section-final");
+    section.appendChild(element);
 }
+
+window.URL = window.URL || window.webkitURL;
 
 main();

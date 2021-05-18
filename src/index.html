@@ -11,23 +11,23 @@
   <body>
     <div class="container-sm">
       <h1>RAM-QR-Code scanneur</h1>
-      <div class="row">
-        <div id="section-1" class="alert alert-success">
-          Vous venez de recevoir votre code QR et vous vous demandez ce qu'il
-          contient ? Numérisez votre code QR ici.
-        </div>
+      <div id="section-home" class="alert alert-success">
+        Vous venez de recevoir votre code QR et vous vous demandez ce qu'il
+        contient ? Numérisez votre code QR ici.
+          <br>
+          <button type="button" id="show-camera" class="btn btn-primary">Numériser avec votre caméra</button>
+          <button type="button" id="show-file-upload" class="btn btn-primary">Numériser avec un fichier</button>
       </div>
-      <button type="button" id="show-scan" class="btn btn-primary">Scanner</button>
-      <hr/>
-      <div class="row">
-        <div id="section-2" hidden>
-          <div id="loadingMessage">🎥 Accès à votre webcam</div>
-          <canvas id="canvas" hidden></canvas>
-        </div>
+      <div id="section-camera" hidden>
+        <div id="loadingMessage">🎥 Accès à votre webcam</div>
+        <canvas id="canvas" hidden></canvas>
       </div>
-      <div class="row">
-        <div id="section-3" hidden>
-        </div>
+      <div id="section-file" hidden>
+          <input type="file" id="uploaded-file" accept="image/*" />
+          <br>
+          <canvas id="photo" hidden></canvas>
+      </div>
+      <div id="section-final" hidden>
       </div>
       <div class="row">
         <div class="accordion" id="accordionMessages">
@@ -39,7 +39,6 @@
                 </button>
               </h2>
             </div>
-
             <div id="collapseAvertissement" class="collapse show" aria-labelledby="avertissement" data-parent="#accordionMessages">
               <div class="card-body">
                 <p class="card-text">
@@ -83,6 +82,7 @@
                   <li><a href="https://github.com/dvci/health-cards-walkthrough/blob/main/SMART%20Health%20Cards.ipynb">Documentation SMART Health Cards</a></li>
                 </ul>
               </div>
+
             </div>
           </div>
         </div>
