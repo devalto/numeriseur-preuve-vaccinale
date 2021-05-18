@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0XEKCE0M1P"></script>
   <body>
-    <div class="container-md">
+    <div class="container-sm">
       <h1>COVID QR Scanner</h1>
       <div id="section-1" class="alert alert-success">
         Vous venez de recevoir votre code QR et vous vous demandez ce qu'il
@@ -17,23 +17,45 @@
       </div>
       <div id="section-3" hidden>
       </div>
-      <div class="card" id="disclaimer">
-        <div class="card-body">
-          <h5 class="card-title">Avertissement</h5>
-          <p class="card-text">Il est actuellement impossible de valider la provenance
-          et l'intégrité du code QR car la clé publique n'est pas disponible
-          Le résultat synthèse ci-haut n'est que notre compréhension du contenu
-          du code QR. Il devrait être utilisé seulement comme démonstration de la
-          technologie, et non pas comme une façon définitive de déterminer si une
-          personne est immunisée ou non.</p>
+      <hr/>
+      <div class="accordion" id="accordionMessages">
+        <div class="card">
+          <div class="card-header" id="avertissement">
+            <h2 class="mb-0">
+              <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseAvertissement" aria-expanded="true" aria-controls="collapseAvertissement">
+                Avertissement
+              </button>
+            </h2>
+          </div>
+
+          <div id="collapseAvertissement" class="collapse show" aria-labelledby="avertissement" data-parent="#accordionMessages">
+            <div class="card-body">
+              <p class="card-text">
+                Il est actuellement impossible de valider la provenance
+                et l'intégrité du code QR car la clé publique n'est pas disponible
+                Le résultat synthèse ci-haut n'est rien de plus que la lecture des donnéées
+                contenues dans le code QR, pas la vérification de la provenance de celui-ci.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="card" id="disclaimer">
-        <div class="card-body">
-          <h5 class="card-title">Transfert des données</h5>
-          <p class="card-text">Les données sont analysées dans la navigateur seulement. En aucun cas
-        ce site ne transfert sur un serveur distant ou ne collecte les données analysées
-        dans une base de données.</p>
+        <div class="card">
+          <div class="card-header" id="viePrivee">
+            <h2 class="mb-0">
+              <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseViePrivee" aria-expanded="false" aria-controls="collapseViePrivee">
+                Respect de la vie privée
+              </button>
+            </h2>
+          </div>
+          <div id="collapseViePrivee" class="collapse" aria-labelledby="viePrivee" data-parent="#accordionMessages">
+            <div class="card-body">
+              <p class="card-text">
+                Les données sont analysées dans la navigateur seulement. En aucun cas
+                ce site ne transfert sur un serveur distant ou ne collecte les données analysées
+                dans une base de données.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       <div class="card" id="disclaimer">
@@ -41,7 +63,7 @@
           <h5 class="card-title">Sources et remerciements</h5>
           <ul>
             <li><a href="https://twitter.com/remi">@remi</a> pour avoir publié sa preuve de concept</li>
-            <li><a href="https://github.com/dvci/health-cards-walkthrough/blob/main/SMART%20Health%20Cards.ipynb">Bonne documentation qui explique le standard SMART Health Cards</a></li>
+            <li><a href="https://github.com/dvci/health-cards-walkthrough/blob/main/SMART%20Health%20Cards.ipynb">Documentation SMART Health Cards</a></li>
           </ul>
         </div>
       </div>
