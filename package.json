@@ -12,7 +12,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL",
   "devDependencies": {
     "@types/bootstrap": "^5.0.15",
     "autoprefixer": "^10.2.5",
