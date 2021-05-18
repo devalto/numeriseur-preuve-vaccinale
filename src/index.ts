@@ -21,6 +21,10 @@ function main() {
 
     showFile.addEventListener("click", initSectionFile);
     showFile.addEventListener("click", showSection("section-file"));
+    showFile.addEventListener("click", () => {
+        const uploadedFile = <HTMLInputElement>document.getElementById("uploaded-file");
+        uploadedFile.click();
+    });
 }
 
 function showSection(showSection: string) {
