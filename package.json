@@ -13,16 +13,21 @@
   "keywords": [],
   "author": "",
   "license": "AGPL",
-  "devDependencies": {
-    "@types/bootstrap": "^5.0.15",
+  "dependencies": {
+    "@types/mustache": "^4.1.1",
+    "@types/pako": "^1.0.1",
+    "atoa": "^1.0.0",
     "autoprefixer": "^10.2.5",
     "bootstrap": "4.6",
+    "buffer": "^6.0.3",
     "css-loader": "^5.2.4",
     "express": "^4.17.1",
     "html-webpack-plugin": "^5.3.1",
-    "jose": "^3.12.1",
+    "jsqr": "^1.4.0",
+    "mustache": "^4.2.0",
     "node-sass": "^6.0.0",
     "pako": "^2.0.3",
+    "pngjs": "^6.0.0",
     "postcss-loader": "^5.3.0",
     "precss": "^4.0.0",
     "sass": "^1.32.13",
@@ -34,14 +39,5 @@
     "webpack-cli": "^4.7.0",
     "webpack-dev-middleware": "^3.7.3",
     "webpack-dev-server": "^3.11.2"
-  },
-  "dependencies": {
-    "@types/mustache": "^4.1.1",
-    "@types/pako": "^1.0.1",
-    "atoa": "^1.0.0",
-    "buffer": "^6.0.3",
-    "jsqr": "^1.4.0",
-    "mustache": "^4.2.0",
-    "pngjs": "^6.0.0"
   }
 }
