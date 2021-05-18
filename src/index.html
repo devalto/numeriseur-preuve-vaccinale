@@ -26,6 +26,13 @@
           <input type="file" id="uploaded-file" accept="image/*" hidden />
           <br>
           <canvas id="photo" hidden></canvas>
+          <div class="alert alert-warning show fade" role="alert" hidden id="code-not-found">
+            <strong>Oups!</strong> L'image que vous avez téléversé ne contient pas de code QR du gouvernement du Québec
+            <br>
+            <button type="button" aria-label="Réessayer" id="retry-upload" class="btn btn-info">
+              Recommencer
+            </button>
+          </div>
       </div>
       <div id="section-final" hidden>
       </div>
