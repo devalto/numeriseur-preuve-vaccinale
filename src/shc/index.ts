@@ -1,6 +1,10 @@
 import {inflateRaw} from "pako";
 import {Buffer} from "buffer";
 
+export class SmartHealthCardQRParseError extends Error {
+
+}
+
 export class SmartHealthCardQRParser {
 
     public header: object;
@@ -14,7 +18,12 @@ export class SmartHealthCardQRParser {
     }
 
     public parse(): SmartHealthCard {
-        return new SmartHealthCard(this.payload);
+
+        try {
+            return new SmartHealthCard(this.payload);
+        } catch(e: any) {
+            throw new SmartHealthCardQRParseError();
+        }
     }
 
     static fromQRCodeRawData(uri: string): SmartHealthCardQRParser {

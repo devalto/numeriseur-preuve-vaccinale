@@ -1,4 +1,10 @@
-import {CovidImmunizationStatus, CovidVaccineProof, SmartHealthCard, SmartHealthCardQRParser} from "./shc";
+import {
+    CovidImmunizationStatus,
+    CovidVaccineProof,
+    SmartHealthCard,
+    SmartHealthCardQRParseError,
+    SmartHealthCardQRParser
+} from "./shc";
 import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
@@ -48,10 +54,11 @@ function initSectionFile() {
             URL.revokeObjectURL(this.src);
             c.height = img.height;
             c.width = img.width;
-            c.hidden = false;
 
             const ctx = c.getContext("2d");
             ctx.drawImage(img, 0, 0, c.width, c.height);
+
+            c.hidden = false;
 
             const imageData = ctx.getImageData(0, 0, img.width, img.height);
             var code = jsQR(imageData.data, imageData.width, imageData.height, {
@@ -62,8 +69,12 @@ function initSectionFile() {
                     const parser = SmartHealthCardQRParser.fromQRCodeRawData(code.data);
                     const shc = parser.parse();
 
+                    uploadedFile.value = "";
+                    c.hidden = true;
+
                     showFinalSection(shc, parser);
                 } catch (e: any) {
+                    throw e;
                 }
             }
 
@@ -113,6 +124,7 @@ function initSectionCamera() {
 
                     continueRequest = false;
                 } catch (e: any) {
+                    throw e;
                 }
             }
         }
@@ -155,6 +167,8 @@ function showShc(shc: SmartHealthCard) {
         '</p>'+
       '</div>'+
     '</div>'+
+    '<hr/>' +
+    '<button id="show-home">Recommencer</button>' +
     '<hr/>';
 
     element.innerHTML = Mustache.render(template, view);
