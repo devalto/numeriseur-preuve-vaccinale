@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <title>RAM-QR-Code scanneur</title>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0XEKCE0M1P"></script>
   </head>
   <body>
     <div class="container-sm padding-footer">
@@ -11,10 +10,10 @@
       <div id="section-home" class="alert alert-success">
         Vous venez de recevoir votre code QR et vous vous demandez ce qu'il
         contient ? Numérisez votre code QR ici.
-          <br>
-          <button type="button" id="show-camera" class="btn btn-primary">Numériser avec votre caméra</button>
-          <button type="button" id="show-file-upload" class="btn btn-primary">Numériser avec un fichier</button>
       </div>
+      <button type="button" id="show-camera" class="btn btn-primary btn-lg" title="Depuis votre caméra">📷</button>
+      <button type="button" id="show-file-upload" class="btn btn-primary btn-lg" title="Depuis un fichier">💾</button>
+      <hr/>
       <div id="section-camera" hidden>
         <div id="loadingMessage">🎥 Accès à votre webcam</div>
         <canvas id="canvas" hidden></canvas>
@@ -24,12 +23,10 @@
           <br>
           <canvas id="photo" hidden></canvas>
           <div class="alert alert-warning show fade" role="alert" hidden id="code-not-found">
-            <strong>Oups!</strong> L'image que vous avez téléversé ne contient pas de code QR du gouvernement du Québec
-            <br>
-            <button type="button" aria-label="Réessayer" id="retry-upload" class="btn btn-info">
-              Recommencer
-            </button>
+            <strong>Oups!</strong> L'image que vous avez téléversé ne contient pas de Code QR
           </div>
+      </div>
+      <div id="section-signature">
       </div>
       <div id="section-final" hidden>
       </div>
@@ -44,6 +41,7 @@
           </div>
           <div id="collapseAvertissement" class="collapse show" aria-labelledby="avertissement" data-parent="#accordionMessages">
             <div class="card-body">
+              <a id="avertissementAnchor"></a>
               <p class="card-text">
                 Il est actuellement impossible de valider la provenance
                 et l'intégrité du code QR car la clé publique n'est pas disponible

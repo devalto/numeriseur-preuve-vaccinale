@@ -4,14 +4,35 @@ import {
     SmartHealthCard,
     SmartHealthCardQRParseError,
     SmartHealthCardQRParser
-} from "./shc";
+} from "./shc/shc";
 import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
-import './analytics.js'
 import 'bootstrap'
 
+import { parseJwk } from 'jose/jwk/parse'
+import { compactVerify } from 'jose/jws/compact/verify'
+
+let publicKeys:Array<any> = [];
+
 function main() {
+    window.fetch('config.json')
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      if (data.analytics) {
+        let analytics = document.createElement('script');
+        analytics.setAttribute('src', data.analytics);
+        document.head.appendChild(analytics);
+      }
+      if (data.keys) {
+        publicKeys = data.keys;
+      }
+    });
+    
     const showScan = document.getElementById("show-camera");
 
     showScan.addEventListener("click", initSectionCamera);
@@ -74,8 +95,10 @@ function initSectionFile() {
 
                     uploadedFile.value = "";
 
+                    checkJWSSignature(code.data, parser);
                     showFinalSection(shc, parser);
                 } catch (e: any) {
+                  throw e;
                 }
             }
 
@@ -135,6 +158,7 @@ function initSectionCamera() {
                         track.stop();
                     });
 
+                    checkJWSSignature(code.data, parser);
                     showFinalSection(shc, parser);
 
                     continueRequest = false;
@@ -205,7 +229,7 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
     const template =
       '<p>' +
       '<button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#collapsePayload" aria-expanded="false" aria-controls="collapsePayload">' +
-      'Contenu du code QR' +
+      'Afficher le contenu du code QR' +
       '</button>' +
       '</p>' +
       '<div class="collapse" id="collapsePayload">' +
@@ -221,6 +245,67 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
 
     const section = document.getElementById("section-final");
     section.appendChild(element);
+}
+
+function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
+  let jws = code.split("/")[1]
+            .match(/(..?)/g)
+            .map(
+                (number) => String.fromCharCode(parseInt(number, 10) + 45)
+            )
+            .join("");
+  let header: any = shcParser.header;
+  let publicKey: JsonWebKey = publicKeys.find((key) => {
+    return key.kid === header.kid;
+  });
+
+  if (publicKey) {
+    importKeyThenVerifySignature(publicKey, jws);
+  } else {
+    let payload: any = shcParser.payload as any;
+    if (payload.iss) {
+      window.fetch(payload.iss+'/.well-known/jwks.json')
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        }
+      })
+      .then((jwks) => {
+        let publicKey: JsonWebKey = publicKeys.find((key) => {
+          return key.kid === header.kid;
+        });
+        if (publicKey) {
+          importKeyThenVerifySignature(publicKey, jws);
+        } else {
+          showSignatureResult("warning", "Erreur lors de la validation du Code QR - impossible de vérifier la signature <a href='#avertissementAnchor'>(voir pourquoi)</a>");
+        }
+      });
+    } else {
+      showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu");
+    }
+  }
+}
+
+function importKeyThenVerifySignature(publicKey: any, jws: any) {
+  parseJwk(publicKey, "ES256")
+  .then((key) => {
+    compactVerify(jws, key)
+    .then((result) => {
+      showSignatureResult("success", "Code QR vérifié avec succès");
+    })
+    .catch((err) => {
+      showSignatureResult("danger", "Code QR avec un signature invalide");
+    });
+  })
+  .catch((err) => {
+    showSignatureResult("warning", "Erreur lors de la validation du Code QR - Erreur de clé publique");
+  });
+}
+
+function showSignatureResult(type: string, message: string) {
+  const section = document.getElementById("section-signature");
+  section.innerText = "";
+  section.innerHTML = '<div class="alert alert-'+type+'" role="alert">'+message+'</div>';
 }
 
 window.URL = window.URL || window.webkitURL;
