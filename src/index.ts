@@ -203,11 +203,19 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
     }
 
     const template =
-        '<h2>Contenu complet du code QR</h2>' +
-        '<h3>Entête</h3>' +
-        '<pre class="json"><code>{{header}}</code></pre>' +
-        '<h3>Payload</h3>' +
-        '<pre class="json"><code>{{payload}}</code></pre>';
+      '<p>' +
+      '<button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#collapsePayload" aria-expanded="false" aria-controls="collapsePayload">' +
+      'Contenu du code QR' +
+      '</button>' +
+      '</p>' +
+      '<div class="collapse" id="collapsePayload">' +
+      '<div class="card card-body">' +
+      '<h5>Entête</h5>' +
+      '<pre class="json"><code>{{header}}</code></pre>' +
+      '<h5>Payload</h5>' +
+      '<pre class="json"><code>{{payload}}</code></pre>' +
+      '</div>' +
+      '</div>';
 
     element.innerHTML = Mustache.render(template, view);
 

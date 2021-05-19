@@ -4,13 +4,10 @@
     <meta charset="utf-8">
     <title>RAM-QR-Code scanneur</title>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0XEKCE0M1P"></script>
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>-->
   </head>
   <body>
-    <div class="container-sm">
-      <h1>RAM-QR-Code scanneur</h1>
+    <div class="container-sm padding-footer">
+      <h1 class="text-center title-padded">RAM-QR-Code scanneur</h1>
       <div id="section-home" class="alert alert-success">
         Vous venez de recevoir votre code QR et vous vous demandez ce qu'il
         contient ? Numérisez votre code QR ici.
@@ -36,71 +33,69 @@
       </div>
       <div id="section-final" hidden>
       </div>
-      <div class="row">
-        <div class="accordion" id="accordionMessages">
-          <div class="card">
-            <div class="card-header" id="avertissement">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseAvertissement" aria-expanded="true" aria-controls="collapseAvertissement">
-                  Avertissement
-                </button>
-              </h2>
-            </div>
-            <div id="collapseAvertissement" class="collapse show" aria-labelledby="avertissement" data-parent="#accordionMessages">
-              <div class="card-body">
-                <p class="card-text">
-                  Il est actuellement impossible de valider la provenance
-                  et l'intégrité du code QR car la clé publique n'est pas disponible
-                  Le résultat synthèse ci-haut n'est rien de plus que la lecture des donnéées
-                  contenues dans le code QR, pas la vérification de la provenance de celui-ci.
-                </p>
-              </div>
-            </div>
+      <div class="accordion" id="accordionMessages">
+        <div class="card">
+          <div class="card-header" id="avertissement">
+            <h2 class="mb-0">
+              <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseAvertissement" aria-expanded="true" aria-controls="collapseAvertissement">
+                Avertissement
+              </button>
+            </h2>
           </div>
-          <div class="card">
-            <div class="card-header" id="viePrivee">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseViePrivee" aria-expanded="false" aria-controls="collapseViePrivee">
-                  Respect de la vie privée
-                </button>
-              </h2>
-            </div>
-            <div id="collapseViePrivee" class="collapse" aria-labelledby="viePrivee" data-parent="#accordionMessages">
-              <div class="card-body">
-                <p class="card-text">
-                  Les données du code QR sont analysées dans le navigateur seulement. En aucun cas
-                  ce site ne fait de transferts sur un serveur distant ou ne collecte des données privées.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header" id="remerciements">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseRemerciements" aria-expanded="false" aria-controls="collapseRemerciements">
-                  Sources et remerciements
-                </button>
-              </h2>
-            </div>
-            <div id="collapseRemerciements" class="collapse" aria-labelledby="remerciements" data-parent="#accordionMessages">
-              <div class="card-body">
-                <ul>
-                  <li><a href="https://twitter.com/remi">@remi</a> pour avoir publié sa preuve de concept</li>
-                  <li><a href="https://github.com/dvci/health-cards-walkthrough/blob/main/SMART%20Health%20Cards.ipynb">Documentation SMART Health Cards</a></li>
-                </ul>
-              </div>
-
+          <div id="collapseAvertissement" class="collapse show" aria-labelledby="avertissement" data-parent="#accordionMessages">
+            <div class="card-body">
+              <p class="card-text">
+                Il est actuellement impossible de valider la provenance
+                et l'intégrité du code QR car la clé publique n'est pas disponible
+                Le résultat synthèse ci-haut n'est rien de plus que la lecture des donnéées
+                contenues dans le code QR, pas la vérification de la provenance de celui-ci.
+              </p>
             </div>
           </div>
         </div>
+        <div class="card">
+          <div class="card-header" id="viePrivee">
+            <h2 class="mb-0">
+              <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseViePrivee" aria-expanded="false" aria-controls="collapseViePrivee">
+                Respect de la vie privée
+              </button>
+            </h2>
+          </div>
+          <div id="collapseViePrivee" class="collapse" aria-labelledby="viePrivee" data-parent="#accordionMessages">
+            <div class="card-body">
+              <p class="card-text">
+                Les données du code QR sont analysées dans le navigateur seulement. En aucun cas
+                ce site ne fait de transferts sur un serveur distant ou ne collecte des données privées.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="remerciements">
+            <h2 class="mb-0">
+              <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseRemerciements" aria-expanded="false" aria-controls="collapseRemerciements">
+                Sources et remerciements
+              </button>
+            </h2>
+          </div>
+          <div id="collapseRemerciements" class="collapse" aria-labelledby="remerciements" data-parent="#accordionMessages">
+            <div class="card-body">
+              <ul>
+                <li><a href="https://twitter.com/remi">@remi</a> pour avoir publié sa preuve de concept</li>
+                <li><a href="https://github.com/dvci/health-cards-walkthrough/blob/main/SMART%20Health%20Cards.ipynb">Documentation SMART Health Cards</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
       </div>
-      <div class="footer">
-        <p>Copyright 2021 - Développé sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html">Affero GPL</a></p>
-        <ul>
-          <li><a href="https://twitter.com/sylvainfilteau">Sylvain</a> chez <a href="http://www.devalto.com">Technologies DevAlto Inc</a></li>
-          <li><a href="https://github.com/babelouest">Nicolas Mora</a></li>
-        </ul>
-      </div>
+    </div>
+    <div class="footer bg-light">
+      <p>Copyright 2021 - Développé sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html">Affero GPL</a></p>
+      <ul>
+        <li><a href="https://twitter.com/sylvainfilteau">Sylvain</a> chez <a href="http://www.devalto.com">Technologies DevAlto Inc</a></li>
+        <li><a href="https://github.com/babelouest">Nicolas Mora</a></li>
+      </ul>
     </div>
   </body>
 </html>

@@ -18,6 +18,15 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
   text-align: center;
 }
 
+.padding-footer {
+  padding-bottom: 120px;
+}
+
+.title-padded {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
 .fade-in-text {
   display: inline-block;
   animation: fadeIn linear 1s;
