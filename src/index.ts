@@ -229,7 +229,7 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
     const template =
       '<p>' +
       '<button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#collapsePayload" aria-expanded="false" aria-controls="collapsePayload">' +
-      'Contenu du code QR' +
+      'Afficher le contenu du code QR' +
       '</button>' +
       '</p>' +
       '<div class="collapse" id="collapsePayload">' +
@@ -277,11 +277,11 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
         if (publicKey) {
           importKeyThenVerifySignature(publicKey, jws);
         } else {
-          showSignatureResult("warning", "Erreur lors de la validation du QR-Code (no publicKey fetched)");
+          showSignatureResult("warning", "Erreur lors de la validation du Code QR - impossible de vérifier la signature <a href='#avertissementAnchor'>(voir pourquoi)</a>");
         }
       });
     } else {
-      showSignatureResult("warning", "Erreur lors de la validation du QR-Code (no issuer)");
+      showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu");
     }
   }
 }
@@ -291,14 +291,14 @@ function importKeyThenVerifySignature(publicKey: any, jws: any) {
   .then((key) => {
     compactVerify(jws, key)
     .then((result) => {
-      showSignatureResult("success", "QR-Code valide");
+      showSignatureResult("success", "Code QR vérifié avec succès");
     })
     .catch((err) => {
-      showSignatureResult("danger", "QR-Code invalide");
+      showSignatureResult("danger", "Code QR avec un signature invalide");
     });
   })
   .catch((err) => {
-    showSignatureResult("warning", "Erreur lors de la validation du QR-Code (importKey)");
+    showSignatureResult("warning", "Erreur lors de la validation du Code QR - Erreur de clé publique");
   });
 }
 
