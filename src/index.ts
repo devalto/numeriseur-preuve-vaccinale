@@ -10,6 +10,9 @@ import jsQR from "jsqr";
 import './scss/index.scss'
 import 'bootstrap'
 
+import { parseJwk } from 'jose/jwk/parse'
+import { compactVerify } from 'jose/jws/compact/verify'
+
 let publicKeys:Array<any> = [];
 
 function main() {
@@ -255,12 +258,9 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
   let publicKey: JsonWebKey = publicKeys.find((key) => {
     return key.kid === header.kid;
   });
-  var enc = new TextEncoder();
-  let data = enc.encode(jws.split(".").slice(0,2).join("."));
-  let signature = enc.encode(shcParser.signature);
 
   if (publicKey) {
-    importKeyThenVerifySignature(publicKey, data, signature);
+    importKeyThenVerifySignature(publicKey, jws);
   } else {
     let payload: any = shcParser.payload as any;
     if (payload.iss) {
@@ -274,9 +274,8 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
         let publicKey: JsonWebKey = publicKeys.find((key) => {
           return key.kid === header.kid;
         });
-        let data = jws.split(".");
         if (publicKey) {
-          importKeyThenVerifySignature(publicKey, data, signature);
+          importKeyThenVerifySignature(publicKey, jws);
         } else {
           showSignatureResult("warning", "Erreur lors de la validation du QR-Code (no publicKey fetched)");
         }
@@ -287,51 +286,19 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
   }
 }
 
-function importKeyThenVerifySignature(publicKey: any, data: any, signature: any) {
-  window.crypto.subtle.importKey(
-    "jwk",
-    //publicKey,
-    {   //this is an example jwk key, other key types are Uint8Array objects
-        kty: "EC",
-        crv: "P-256",
-        x: "zCQ5BPHPCLZYgdpo1n-x_90P2Ij52d53YVwTh3ZdiMo",
-        y: "pDfQTUx0-OiZc5ZuKMcA7v2Q7ZPKsQwzB58bft0JTko",
-        ext: true,
-    },
-    {   //these are the algorithm options
-        name: "ECDSA",
-        namedCurve: "P-256", //can be "P-256", "P-384", or "P-521"
-    },
-    false,
-    ['verify']
-  )
-  .then((pubkey) => {
-    verifySignature(pubkey, data, signature);
+function importKeyThenVerifySignature(publicKey: any, jws: any) {
+  parseJwk(publicKey, "ES256")
+  .then((key) => {
+    compactVerify(jws, key)
+    .then((result) => {
+      showSignatureResult("success", "QR-Code valide");
+    })
+    .catch((err) => {
+      showSignatureResult("danger", "QR-Code invalide");
+    });
   })
   .catch((err) => {
     showSignatureResult("warning", "Erreur lors de la validation du QR-Code (importKey)");
-  });
-}
-
-function verifySignature(publicKey: any, data: ArrayBuffer, signature: ArrayBuffer) {
-  crypto.subtle.verify(
-    {
-      name: "ECDSA",
-      hash: {name: "SHA-256"}
-    }, 
-    publicKey, 
-    signature, 
-    data
-  )
-  .then((res) => {
-    if (res) {
-      showSignatureResult("success", "QR-Code valide");
-    } else {
-      showSignatureResult("danger", "QR-Code invalide");
-    }
-  })
-  .catch((err) => {
-    showSignatureResult("warning", "Erreur lors de la validation du QR-Code (verify)");
   });
 }
 
