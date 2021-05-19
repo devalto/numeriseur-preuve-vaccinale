@@ -4,14 +4,32 @@ import {
     SmartHealthCard,
     SmartHealthCardQRParseError,
     SmartHealthCardQRParser
-} from "./shc";
+} from "./shc/shc";
 import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
-import './analytics.js'
 import 'bootstrap'
 
+let publicKeys:Array<any> = [];
+
 function main() {
+    window.fetch('config.json')
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      if (data.analytics) {
+        let analytics = document.createElement('script');
+        analytics.setAttribute('src', data.analytics);
+        document.head.appendChild(analytics);
+      }
+      if (data.keys) {
+        publicKeys = data.keys;
+      }
+    });
+    
     const showScan = document.getElementById("show-camera");
 
     showScan.addEventListener("click", initSectionCamera);
@@ -74,8 +92,10 @@ function initSectionFile() {
 
                     uploadedFile.value = "";
 
+                    checkJWSSignature(code.data, parser);
                     showFinalSection(shc, parser);
                 } catch (e: any) {
+                  throw e;
                 }
             }
 
@@ -135,6 +155,7 @@ function initSectionCamera() {
                         track.stop();
                     });
 
+                    checkJWSSignature(code.data, parser);
                     showFinalSection(shc, parser);
 
                     continueRequest = false;
@@ -221,6 +242,103 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
 
     const section = document.getElementById("section-final");
     section.appendChild(element);
+}
+
+function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
+  let jws = code.split("/")[1]
+            .match(/(..?)/g)
+            .map(
+                (number) => String.fromCharCode(parseInt(number, 10) + 45)
+            )
+            .join("");
+  let header: any = shcParser.header;
+  let publicKey: JsonWebKey = publicKeys.find((key) => {
+    return key.kid === header.kid;
+  });
+  var enc = new TextEncoder();
+  let data = enc.encode(jws.split(".").slice(0,2).join("."));
+  let signature = enc.encode(shcParser.signature);
+
+  if (publicKey) {
+    importKeyThenVerifySignature(publicKey, data, signature);
+  } else {
+    let payload: any = shcParser.payload as any;
+    if (payload.iss) {
+      window.fetch(payload.iss+'/.well-known/jwks.json')
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        }
+      })
+      .then((jwks) => {
+        let publicKey: JsonWebKey = publicKeys.find((key) => {
+          return key.kid === header.kid;
+        });
+        let data = jws.split(".");
+        if (publicKey) {
+          importKeyThenVerifySignature(publicKey, data, signature);
+        } else {
+          showSignatureResult("warning", "Erreur lors de la validation du QR-Code (no publicKey fetched)");
+        }
+      });
+    } else {
+      showSignatureResult("warning", "Erreur lors de la validation du QR-Code (no issuer)");
+    }
+  }
+}
+
+function importKeyThenVerifySignature(publicKey: any, data: any, signature: any) {
+  window.crypto.subtle.importKey(
+    "jwk",
+    //publicKey,
+    {   //this is an example jwk key, other key types are Uint8Array objects
+        kty: "EC",
+        crv: "P-256",
+        x: "zCQ5BPHPCLZYgdpo1n-x_90P2Ij52d53YVwTh3ZdiMo",
+        y: "pDfQTUx0-OiZc5ZuKMcA7v2Q7ZPKsQwzB58bft0JTko",
+        ext: true,
+    },
+    {   //these are the algorithm options
+        name: "ECDSA",
+        namedCurve: "P-256", //can be "P-256", "P-384", or "P-521"
+    },
+    false,
+    ['verify']
+  )
+  .then((pubkey) => {
+    verifySignature(pubkey, data, signature);
+  })
+  .catch((err) => {
+    showSignatureResult("warning", "Erreur lors de la validation du QR-Code (importKey)");
+  });
+}
+
+function verifySignature(publicKey: any, data: ArrayBuffer, signature: ArrayBuffer) {
+  crypto.subtle.verify(
+    {
+      name: "ECDSA",
+      hash: {name: "SHA-256"}
+    }, 
+    publicKey, 
+    signature, 
+    data
+  )
+  .then((res) => {
+    if (res) {
+      showSignatureResult("success", "QR-Code valide");
+    } else {
+      showSignatureResult("danger", "QR-Code invalide");
+    }
+  })
+  .catch((err) => {
+    showSignatureResult("warning", "Erreur lors de la validation du QR-Code (verify)");
+  });
+}
+
+function showSignatureResult(type: string, message: string) {
+  const section = document.getElementById("section-signature");
+  section.innerText = "";
+  section.innerHTML = '<div class="alert alert-'+type+'" role="alert">'+message+'</div>';
 }
 
 window.URL = window.URL || window.webkitURL;
