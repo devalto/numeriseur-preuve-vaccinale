@@ -17,21 +17,21 @@ let publicKeys:Array<any> = [];
 
 function main() {
     window.fetch('config.json')
-    .then((response) => {
-      if (response.status === 200) {
-        return response.json();
-      }
-    })
-    .then((data) => {
-      if (data.analytics) {
-        let analytics = document.createElement('script');
-        analytics.setAttribute('src', data.analytics);
-        document.head.appendChild(analytics);
-      }
-      if (data.keys) {
-        publicKeys = data.keys;
-      }
-    });
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+        })
+        .then((data) => {
+            if (data.analytics) {
+                let analytics = document.createElement('script');
+                analytics.setAttribute('src', data.analytics);
+                document.head.appendChild(analytics);
+            }
+            if (data.keys) {
+                publicKeys = data.keys;
+            }
+        });
     
     const showScan = document.getElementById("show-camera");
 
