@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/index.ts',
@@ -21,7 +22,7 @@ module.exports = {
                 }, {
                     loader: 'sass-loader' // compiles Sass to CSS
                 }]
-            }
+            },
         ],
     },
     resolve: {
@@ -31,6 +32,11 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'COVID QR Scanner',
             template: "./src/index.html"
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: "src/config.json" }
+            ]
         }),
     ],
     output: {
