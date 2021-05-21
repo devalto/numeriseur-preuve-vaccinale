@@ -7,10 +7,16 @@ export class GoogleAnalytics {
         this.url = url;
     }
 
-    include(window: Window) {
+    include() {
         (<any>window).dataLayer = (<any>window).dataLayer || [];
+        function gtag(...arg: any[]){(<any>window).dataLayer.push(arg);}
+        gtag('js', new Date());
+
+        gtag('config', 'GA_MEASUREMENT_ID');
+
+        /*(<any>window).dataLayer = (<any>window).dataLayer || [];
         this.send('js', new Date());
-        this.send('config', this.code);
+        this.send('config', this.code);*/
 
         let document = window.document;
         let urlWithId = this.url + "?id=" + this.code;

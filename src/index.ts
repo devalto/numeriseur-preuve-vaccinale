@@ -27,7 +27,7 @@ function main() {
         .then((data) => {
             if (data.analytics) {
                 const ga = new GoogleAnalytics(data.analytics);
-                ga.include(window);
+                ga.include();
             }
             if (data.keys) {
                 publicKeys = data.keys;
