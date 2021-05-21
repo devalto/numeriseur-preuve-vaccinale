@@ -9,6 +9,7 @@ import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
 import 'bootstrap'
+import {GoogleAnalytics} from "./google-analytics";
 
 import { parseJwk } from 'jose/jwk/parse'
 import { compactVerify } from 'jose/jws/compact/verify'
@@ -16,7 +17,8 @@ import { compactVerify } from 'jose/jws/compact/verify'
 let publicKeys:Array<any> = [];
 
 function main() {
-    window.fetch('config.json')
+    window
+        .fetch('config.json')
         .then((response) => {
             if (response.status === 200) {
                 return response.json();
@@ -24,9 +26,8 @@ function main() {
         })
         .then((data) => {
             if (data.analytics) {
-                let analytics = document.createElement('script');
-                analytics.setAttribute('src', data.analytics);
-                document.head.appendChild(analytics);
+                const ga = new GoogleAnalytics(data.analytics);
+                ga.include(window);
             }
             if (data.keys) {
                 publicKeys = data.keys;
