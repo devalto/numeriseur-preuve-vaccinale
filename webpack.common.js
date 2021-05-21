@@ -30,12 +30,15 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'COVID QR Scanner',
+            title: 'RAM-QR-Code scanneur',
             template: "./src/index.html"
         }),
         new CopyWebpackPlugin({
             patterns: [
-                { from: "src/config.json" }
+                { from: "src/config.json" },
+                { from: "src/i18nextify.min.js" },
+                { from: "src/locales/fr/translation.json", to: "locales/fr/" },
+                { from: "src/locales/en/translation.json", to: "locales/en/" }
             ]
         }),
     ],

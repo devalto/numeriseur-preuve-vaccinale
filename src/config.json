@@ -1,3 +1,32 @@
 {
-  "analytics": "https://www.googletagmanager.com/gtag/js?id=G-0XEKCE0M1P"
+  "analytics": "https://www.googletagmanager.com/gtag/js?id=G-0XEKCE0M1P",
+  "keys": [
+    {
+      "kty": "EC",
+      "use": "sig",
+      "crv": "P-256",
+      "kid": "pFSjHpxqG0BXmqkV7SXvq4f4NPp99H25DeZ8jc3w6Ps",
+      "x": "NNQb0XhaztduRZrmNbx_SYbbdulVNYoemGi9zEngYHo",
+      "y": "xGMy21OM4srp3PHnHaoHOe6xTlkMjFHU1B336UXQoEQ",
+      "alg": "ES256"
+    },
+    {
+      "kty": "EC",
+      "use": "sig",
+      "crv": "P-256",
+      "kid": "XAaQ50Ec_PxCMvgmpnz_86Vut4hGOdfcMWuHy5_Qlro",
+      "x": "1-YO4RHuMu7BFnL34zhgGqAhP7R6hC89YJpU-FOygIY",
+      "y": "h-W79Xq-1VLyUWLZp8mCzqwwrlUZ5IJWDif_mKQZOsA",
+      "alg": "ES256"
+    },
+    {
+      "kty": "EC",
+      "use": "sig",
+      "crv": "P-256",
+      "kid": "tr-ZaIri1FoCGvPX866ZeYRHLKMO6srOE2Po1QM7iWM",
+      "x": "B_qqfEZ0TYEysh6NOdEF_DpfSH92keFFh9oteLxfwOc",
+      "y": "4_EF-lSNmnone4SCv3iOh3acFwMWVpjrgWjqdN4YtHE",
+      "alg": "ES256"
+    }
+  ]
 }
