@@ -11,8 +11,7 @@ export class GoogleAnalytics {
         (<any>window).dataLayer = (<any>window).dataLayer || [];
         function gtag(...arg: any[]){(<any>window).dataLayer.push(arg);}
         gtag('js', new Date());
-
-        gtag('config', 'GA_MEASUREMENT_ID');
+        gtag('config', this.code);
 
         /*(<any>window).dataLayer = (<any>window).dataLayer || [];
         this.send('js', new Date());
