@@ -53,6 +53,7 @@ module.exports = (env) => {
     };
 
     if (env.GA_PROPERTY_ID) {
+        console.log("Include Google Analytics partial...");
         config.plugins.push(new HtmlWebpackPartialsPlugin({
             path: path.join(__dirname, './partials/analytics.html'),
             location: 'head',
