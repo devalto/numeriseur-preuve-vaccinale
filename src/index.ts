@@ -60,7 +60,11 @@ function showSection(showSection: string) {
 }
 
 function initSectionFile() {
+    const notFoundMessage = document.getElementById("code-not-found");
+    notFoundMessage.hidden = true;
+
     const uploadedFile = <HTMLInputElement>document.getElementById("uploaded-file");
+    uploadedFile.value = "";
     uploadedFile.addEventListener("change", (e) => {
         if (uploadedFile.files.length <= 0) {
             return;
@@ -176,7 +180,7 @@ function showFinalSection(shc: SmartHealthCard, shcParser: SmartHealthCardQRPars
 }
 
 function showShc(shc: SmartHealthCard) {
-    const section = document.getElementById("section-final");
+    const section = document.getElementById("section-final-container");
     section.innerText = "";
 
     const element = document.createElement('div');
@@ -239,7 +243,7 @@ function showPayload(shcParser: SmartHealthCardQRParser) {
 
     element.innerHTML = Mustache.render(template, view);
 
-    const section = document.getElementById("section-final");
+    const section = document.getElementById("section-final-container");
     section.appendChild(element);
 }
 
@@ -277,7 +281,7 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
         }
       });
     } else {
-      showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu");
+      showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu <a href='#avertissementAnchor'>(voir pourquoi)</a>");
     }
   }
 }
