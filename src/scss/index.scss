@@ -16,6 +16,10 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
   bottom: 0;
   width: 100%;
   text-align: center;
+
+  ul {
+    list-style-type: none;
+  }
 }
 
 .padding-footer {
