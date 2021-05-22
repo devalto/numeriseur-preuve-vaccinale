@@ -9,7 +9,6 @@ import Mustache from "mustache"
 import jsQR from "jsqr";
 import './scss/index.scss'
 import 'bootstrap'
-import {GoogleAnalytics} from "./google-analytics";
 
 import { parseJwk } from 'jose/jwk/parse'
 import { compactVerify } from 'jose/jws/compact/verify'
@@ -25,10 +24,6 @@ function main() {
             }
         })
         .then((data) => {
-            if (data.analytics) {
-                const ga = new GoogleAnalytics(data.analytics);
-                ga.include();
-            }
             if (data.keys) {
                 publicKeys = data.keys;
             }
