@@ -111,15 +111,6 @@ function initSectionFile() {
 
         img.src = url;
     });
-
-    const retry = <HTMLButtonElement>document.getElementById("retry-upload");
-    retry.addEventListener("click", () => {
-        const notFoundMessage = document.getElementById("code-not-found");
-        notFoundMessage.hidden = true;
-
-        uploadedFile.value = "";
-        uploadedFile.click();
-    });
 }
 
 function initSectionCamera() {
