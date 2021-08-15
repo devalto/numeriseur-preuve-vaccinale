@@ -14,6 +14,7 @@ import { parseJwk } from 'jose/jwk/parse'
 import { compactVerify } from 'jose/jws/compact/verify'
 
 let publicKeys:Array<any> = [];
+let defaultKey:any = {};
 
 function main() {
     window
@@ -26,6 +27,9 @@ function main() {
         .then((data) => {
             if (data.keys) {
                 publicKeys = data.keys;
+            }
+            if (data.defaultKey) {
+                defaultKey = data.defaultKey;
             }
         });
     
@@ -257,8 +261,12 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
     if (payload.iss) {
       window.fetch(payload.iss+'/.well-known/jwks.json')
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           return response.json();
+        } else {
+          if (defaultKey) {
+            importKeyThenVerifySignature(defaultKey, jws);
+          }
         }
       })
       .then((jwks) => {
@@ -268,7 +276,11 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
         if (publicKey) {
           importKeyThenVerifySignature(publicKey, jws);
         } else {
-          showSignatureResult("warning", "Erreur lors de la validation du Code QR - impossible de vérifier la signature <a href='#avertissementAnchor'>(voir pourquoi)</a>");
+          if (defaultKey) {
+            importKeyThenVerifySignature(defaultKey, jws);
+          } else {
+            showSignatureResult("warning", "Erreur lors de la validation du Code QR - impossible de vérifier la signature <a href='#avertissementAnchor'>(voir pourquoi)</a>");
+          }
         }
       });
     } else {
