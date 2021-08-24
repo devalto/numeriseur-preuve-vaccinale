@@ -1,4 +1,5 @@
 {
+  "iss": {
     "https://narnia.tld/iss": {
       "useKid": true,
       "keys": [
