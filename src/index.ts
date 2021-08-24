@@ -13,8 +13,7 @@ import 'bootstrap'
 import { parseJwk } from 'jose/jwk/parse'
 import { compactVerify } from 'jose/jws/compact/verify'
 
-let publicKeys:Array<any> = [];
-let defaultKey:any = {};
+let issuers:any = {};
 
 function main() {
     window
@@ -25,11 +24,8 @@ function main() {
             }
         })
         .then((data) => {
-            if (data.keys) {
-                publicKeys = data.keys;
-            }
-            if (data.defaultKey) {
-                defaultKey = data.defaultKey;
+            if (data.iss) {
+                issuers = data.iss;
             }
         });
     
@@ -250,42 +246,41 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
             )
             .join("");
   let header: any = shcParser.header;
-  let publicKey: JsonWebKey = publicKeys.find((key) => {
-    return key.kid === header.kid;
-  });
+  let payload: any = shcParser.payload as any;
 
-  if (publicKey) {
-    importKeyThenVerifySignature(publicKey, jws);
-  } else {
-    let payload: any = shcParser.payload as any;
-    if (payload.iss) {
-      window.fetch(payload.iss+'/.well-known/jwks.json')
-      .then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          return response.json();
-        } else {
-          if (defaultKey) {
-            importKeyThenVerifySignature(defaultKey, jws);
-          }
+  if (payload.iss && issuers[payload.iss]) {
+    let iss: any = issuers[payload.iss];
+    if (iss.useKid) {
+      let hasKey:boolean = false;
+      iss.keys.forEach((key:any) => {
+        if (key.kid === header.kid) {
+          hasKey = true;
+          importKeyThenVerifySignature(key, jws);
         }
-      })
-      .then((jwks) => {
-        let publicKey: JsonWebKey = publicKeys.find((key) => {
-          return key.kid === header.kid;
-        });
-        if (publicKey) {
-          importKeyThenVerifySignature(publicKey, jws);
-        } else {
-          if (defaultKey) {
-            importKeyThenVerifySignature(defaultKey, jws);
+      });
+      if (!hasKey) {
+        window.fetch(payload.iss+'/.well-known/jwks.json')
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json();
+          }
+        })
+        .then((jwks) => {
+          let publicKey: JsonWebKey = jwks.find((key:any) => {
+            return key.kid === header.kid;
+          });
+          if (publicKey) {
+            importKeyThenVerifySignature(publicKey, jws);
           } else {
             showSignatureResult("warning", "Erreur lors de la validation du Code QR - impossible de vérifier la signature <a href='#avertissementAnchor'>(voir pourquoi)</a>");
           }
-        }
-      });
+        });
+      }
     } else {
-      showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu <a href='#avertissementAnchor'>(voir pourquoi)</a>");
+      importKeyThenVerifySignature(iss.keys[0], jws);
     }
+  } else {
+    showSignatureResult("warning", "Erreur lors de la validation du Code QR - Émetteur inconnu <a href='#avertissementAnchor'>(voir pourquoi)</a>");
   }
 }
 
@@ -297,7 +292,7 @@ function importKeyThenVerifySignature(publicKey: any, jws: any) {
       showSignatureResult("success", "Code QR vérifié avec succès");
     })
     .catch((err) => {
-      showSignatureResult("danger", "Code QR avec un signature invalide");
+      showSignatureResult("danger", "Code QR avec une signature invalide");
     });
   })
   .catch((err) => {
