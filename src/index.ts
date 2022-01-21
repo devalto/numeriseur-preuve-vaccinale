@@ -180,10 +180,11 @@ function showShc(shc: SmartHealthCard) {
     const templateImmuneStatus = (info.immunizationStatus() == CovidImmunizationStatus.Complete || info.immunizationStatus() == CovidImmunizationStatus.Partial)?'<div class="alert alert-success" role="alert">{{immunizationStatus}}</div>':'<div class="alert alert-danger" role="alert">{{immunizationStatus}}</div>';
     
     const view = {
-        immunizationStatus: info.immunizationStatus() != CovidImmunizationStatus.Complete ? (info.immunizationStatus() == CovidImmunizationStatus.Partial ? '✅ Première dose administrée': '❌ Non vacciné') : '✅ Seconde dose administrée',
+        immunizationStatus: info.immunizationStatus() != CovidImmunizationStatus.Complete ? (info.immunizationStatus() == CovidImmunizationStatus.Partial ? '✅ Première ou deuxième dose administrée': '❌ Non vacciné') : '✅ Troisième dose administrée',
         fullName: info.patientName(),
         firstDose: info.hasFirstDose() ? "✅ Première dose administrée le " + dateFormatter.format(info.firstDose.occurrenceDateTime) : "❌ Première dose non administrée",
-        secondDose: info.hasSecondDose() ? "✅ Seconde dose administrée le " + dateFormatter.format(info.secondDose.occurrenceDateTime) : "❌ Seconde dose non administrée"
+        secondDose: info.hasSecondDose() ? "✅ Seconde dose administrée le " + dateFormatter.format(info.secondDose.occurrenceDateTime) : "❌ Seconde dose non administrée",
+        thirdDose: info.hasThirdDose() ? "✅ Troisième dose administrée le " + dateFormatter.format(info.secondDose.occurrenceDateTime) : "❌ Troisième dose non administrée"
     };
 
     var template =
@@ -194,19 +195,15 @@ function showShc(shc: SmartHealthCard) {
         '<p class="card-text">'+
         '<div class="alert alert-primary" role="alert">{{firstDose}}</div>'+
         '<div class="alert alert-primary" role="alert">{{secondDose}}</div>'+
+        '<div class="alert alert-primary" role="alert">{{thirdDose}}</div>'+
         '</p>'+
       '</div>'+
     '</div>'+
-    '<hr/>' +
-    '<button id="show-home" class="btn btn-primary">Recommencer</button>' +
     '<hr/>';
 
     element.innerHTML = Mustache.render(template, view);
 
     section.appendChild(element);
-
-    const showHome = document.getElementById("show-home");
-    showHome.addEventListener("click", showSection("section-home"));
 };
 
 function showPayload(shcParser: SmartHealthCardQRParser) {
@@ -266,7 +263,7 @@ function checkJWSSignature(code: string, shcParser: SmartHealthCardQRParser) {
           }
         })
         .then((jwks) => {
-          let publicKey: JsonWebKey = jwks.find((key:any) => {
+          let publicKey: JsonWebKey = jwks.keys.find((key:any) => {
             return key.kid === header.kid;
           });
           if (publicKey) {

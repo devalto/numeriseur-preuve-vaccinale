@@ -18,11 +18,10 @@ export class SmartHealthCardQRParser {
     }
 
     public parse(): SmartHealthCard {
-
         try {
             return new SmartHealthCard(this.payload);
         } catch(e: any) {
-            throw new SmartHealthCardQRParseError();
+            //throw new SmartHealthCardQRParseError();
         }
     }
 
@@ -131,7 +130,7 @@ export abstract class FhirEntry {
         if (type == "Patient") {
             return new FhirPatient(resource);
         } else if (type == "Immunization") {
-            return new FhirImmunization(resource);
+            return new FhirImmunization(resource, payload['fullUrl']);
         } else {
             throw new Error("Unknown FHIR type " + type);
         }
@@ -139,7 +138,7 @@ export abstract class FhirEntry {
 }
 
 enum Gender {Male = "Male", Female = "Female"}
-enum ImmunizationStatus {Completed = "Completed"}
+enum ImmunizationStatus {Completed = "completed"}
 
 export class FhirPatient extends FhirEntry {
     public givenName: string;
@@ -154,7 +153,7 @@ export class FhirPatient extends FhirEntry {
         let gender: string = payload["gender"];
 
         this.givenName = name.given.join(" ");
-        this.familyName = name.family.join(" ");
+        this.familyName = name.family;
         this.birthDate = new Date(payload["birthDate"]);
         this.gender = (<any>Gender)[gender];
     }
@@ -162,17 +161,17 @@ export class FhirPatient extends FhirEntry {
 
 export class FhirImmunization extends FhirEntry {
     public occurrenceDateTime: Date;
-    public status: ImmunizationStatus;
-    public protocolApplied: FhirProtocol;
+    public status: string;
     public vaccine: FhirVaccine;
+    public fullUrl: string;
 
-    constructor(payload: any) {
+    constructor(payload: any, fullUrl: string) {
         super();
 
         this.occurrenceDateTime = new Date(payload["occurrenceDateTime"]);
-        this.status = (<any>ImmunizationStatus)[payload["status"]];
+        this.status = payload["status"];
         this.vaccine = new FhirVaccine(payload["vaccineCode"]);
-        this.protocolApplied = new FhirProtocol(payload["protocolApplied"]);
+        this.fullUrl = fullUrl;
     }
 }
 
@@ -192,16 +191,6 @@ export abstract class FhirCoding {
 export class FhirVaccine extends FhirCoding {
 }
 
-export class FhirProtocol {
-    public doseNumber: number;
-    public targetDisease: FhirDisease;
-
-    constructor(payload: any) {
-        this.doseNumber = payload["doseNumber"];
-        this.targetDisease = new FhirDisease(payload["targetDisease"]);
-    }
-}
-
 export class FhirDisease extends FhirCoding {
 }
 
@@ -212,26 +201,34 @@ export class CovidVaccineProof {
     public patient: FhirPatient;
     public firstDose?: FhirImmunization;
     public secondDose?: FhirImmunization;
+    public thirdDose?: FhirImmunization;
 
     constructor(bundle: FhirBundle) {
         this.patient = <FhirPatient> bundle.patient();
         let immunizations = bundle.immunizations();
         this.firstDose = immunizations.find((im: FhirImmunization) => {
            if (
-               im.protocolApplied.doseNumber == 1 &&
-               im.status == ImmunizationStatus.Completed &&
-               im.vaccine.system == "http://hl7.org/fhir/sid/cvx" &&
-               im.protocolApplied.targetDisease.system == "http://browser.ihtsdotools.org/?perspective=full&conceptId1=840536004"
+             im.fullUrl == "resource:1" &&
+             im.status == "completed" &&
+             im.vaccine.system == "http://hl7.org/fhir/sid/cvx"
            ) {
                return im;
            }
         });
         this.secondDose = immunizations.find((im: FhirImmunization) => {
             if (
-                im.protocolApplied.doseNumber == 2 &&
-                im.status == ImmunizationStatus.Completed &&
-                im.vaccine.system == "http://hl7.org/fhir/sid/cvx" &&
-                im.protocolApplied.targetDisease.system == "http://browser.ihtsdotools.org/?perspective=full&conceptId1=840536004"
+              im.fullUrl == "resource:2" &&
+              im.status == "completed" &&
+              im.vaccine.system == "http://hl7.org/fhir/sid/cvx"
+            ) {
+                return im;
+            }
+        });
+        this.thirdDose = immunizations.find((im: FhirImmunization) => {
+            if (
+              im.fullUrl == "resource:3" &&
+              im.status == "completed" &&
+              im.vaccine.system == "http://hl7.org/fhir/sid/cvx"
             ) {
                 return im;
             }
@@ -246,10 +243,14 @@ export class CovidVaccineProof {
         return this.secondDose instanceof FhirImmunization;
     }
 
+    hasThirdDose(): boolean {
+        return this.thirdDose instanceof FhirImmunization;
+    }
+
     immunizationStatus(): CovidImmunizationStatus {
-        if (!this.hasFirstDose() && !this.hasSecondDose()) {
+        if (!this.hasFirstDose() && !this.hasSecondDose() && !this.hasThirdDose()) {
             return CovidImmunizationStatus.NotDone;
-        } else if (this.hasFirstDose() && this.hasSecondDose()) {
+        } else if (this.hasFirstDose() && this.hasSecondDose() && this.hasThirdDose()) {
             return CovidImmunizationStatus.Complete;
         } else {
             return CovidImmunizationStatus.Partial;
